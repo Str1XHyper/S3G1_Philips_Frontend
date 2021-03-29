@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import store from '../store/index'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
@@ -13,6 +14,19 @@ const routes = [
     path: '/Lessons',
     name: 'Lessons',
     component: () => import('../views/Lesson.vue')
+  },
+  {
+    path: '/Questions',
+    name: 'Questions',
+    component: () => import('../views/Questions.vue'),
+    beforeEnter:(to, from, next) => {
+      if(store.state.lessonID == ""){
+        next('/Lessons')
+      } else
+      {
+        next()
+      }
+    }
   },
 ]
 

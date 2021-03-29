@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <v-container>
+  <div class="home">
+ <v-container>
       <v-data-table
         :headers="headers"
-        :items="Lessons"
+        :items="Questions"
         :search="search"
         sort-by="name"
         class="elevation-1"
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Lessons</v-toolbar-title>
+            <v-toolbar-title>Questions</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-text-field
               v-model="search"
@@ -25,8 +25,10 @@
             >
           </v-toolbar>
         </template>
+        <template>
+</template>
         <template v-slot:item.questions="{ item }">
-          <v-btn @click="openQuestions(item)" tile outlined> Questions </v-btn>
+          <v-btn tile outlined> Questions </v-btn>
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="openEditDialog(item)">
@@ -48,7 +50,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn text @click="deleteDialog = false"> Cancel </v-btn>
-            <v-btn color="error" text @click="deleteLesson()"> Delete </v-btn>
+            <v-btn color="error" text @click="deleteQuestion()"> Delete </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -60,11 +62,11 @@
           <validation-observer ref="observer" v-slot="{ invalid }">
             <form @submit.prevent="submit">
               <v-card-title v-if="isEdit">
-                <span class="headline">Edit lesson with ID: </span>
+                <span class="headline">Edit question with ID: </span>
                 <v-text-field class="ml-2" disabled :value="id"> </v-text-field>
               </v-card-title>
               <v-card-title v-if="!isEdit">
-                <span class="headline">Add new lesson</span>
+                <span class="headline">Add new question</span>
               </v-card-title>
               <v-card-text>
                 <v-container>
@@ -72,21 +74,30 @@
                     <v-col cols="12" sm="6" md="6">
                       <ValidationProvider
                         v-slot="{ errors }"
-                        name="Name"
+                        name="Question"
                         rules="required"
                       >
                         <v-text-field
-                          v-model="name"
-                          label="Name*"
+                          v-model="question"
+                          label="Question*"
                           :error-messages="errors"
                           required
                         ></v-text-field>
                       </ValidationProvider>
                     </v-col>
+
+                    <v-col cols="12" sm="6" md="6">
+                      <v-combobox
+                      v-model="type"
+                      :items="types">
+
+                      </v-combobox>
+                    </v-col>
                   </v-row>
                 </v-container>
                 <small>*indicates required field</small>
               </v-card-text>
+              
               <v-card-actions>
                 <v-spacer></v-spacer>
 
@@ -103,6 +114,7 @@
   </div>
 </template>
 
+
 <script>
 import { required } from "vee-validate/dist/rules";
 import {
@@ -118,24 +130,21 @@ extend("required", {
   ...required,
   message: "{_field_} can not be empty",
 });
-
 export default {
-  data: () => ({
-    Lessons: [],
+data: () => ({
+    Questions: [],
     search: "",
     selected: {},
     headers: [
       {
-        text: "Name",
+        text: "Question",
         align: "start",
-        value: "name",
+        value: "question",
       },
       {
-        text: "Questions",
-        value: "questions",
-        sortable: false,
-        filterable: false,
-        align: "center",
+        text: "Type",
+        align: "start",
+        value: "type",
       },
       {
         text: "Actions",
@@ -148,18 +157,31 @@ export default {
     editDialog: false,
     deleteDialog: false,
     isEdit: false,
-    name: "",
+    question: "",
     id: "",
-    ownerID: "",
+    type: "",
+    types: [],
   }),
   created() {
-    const config = {
+    this.$axios({
       method: "get",
-      url: "/Lesson",
-    };
-    this.$axios(config)
+      url: "/Question/" + this.$store.state.lessonID,
+    })
       .then((result) => {
-        this.Lessons = result.data;
+          console.log(result.data)
+        this.Questions = result.data;
+      })
+      .catch((error) => {
+        this.error = true;
+        console.log(error);
+      });
+    this.$axios({
+      method: "get",
+      url: "/Question/Types",
+    })
+      .then((result) => {
+          console.log(result.data)
+        this.types = result.data;
       })
       .catch((error) => {
         this.error = true;
@@ -167,30 +189,28 @@ export default {
       });
   },
   methods: {
-    openQuestions(lesson){
-      this.$store.commit("setLessonId", lesson.id)
-      this.$router.push("/Questions")
-      console.log(lesson)
-    },
-    openDeleteDialog(lesson) {
-      this.selected = lesson;
+    openDeleteDialog(question) {
+      this.selected = question;
       this.deleteDialog = true;
     },
-    openEditDialog(lesson) {
-      this.name = lesson.name;
-      this.id = lesson.id;
+    openEditDialog(question) {
+      this.question = question.question;
+      this.type = question.type;
+      this.id = question.id;
       this.isEdit = true;
       this.editDialog = true;
     },
     openAddDialog() {
-      this.name = "";
+      this.question = "";
       this.id = "";
+      this.type = "";
       this.isEdit = false;
       this.editDialog = true;
     },
     closeEditDialog() {
-      this.name = "";
+      this.question = "";
       this.id = "";
+      this.type = "";
       this.$refs.observer.reset();
       this.isEdit = false;
       this.editDialog = false;
@@ -198,29 +218,29 @@ export default {
     submit() {
       this.$refs.observer.validate().then(() => {
         if (this.isEdit) {
-          this.updateLesson();
-          var result = this.Lessons.find(({ id }) => id === this.id);
-          result.name = this.name;
+          this.updateQuestion();
+          var result = this.Questions.find(({ id }) => id === this.id);
+          result.question = this.question;
+          result.type = this.type;
         } else {
-          this.addLesson();
+          this.addQuestion();
         }
         this.closeEditDialog();
       });
     },
-    updateLesson() {
+    updateQuestion() {
       var config = {
         method: "put",
-        url: "/Lesson/Edit",
+        url: "/Question/Edit",
         headers: {
           "Content-Type": "application/json",
         },
         data: {
-          iD: this.id,
-          name: this.name,
-          ownerID: this.ownerID,
+          id: this.id,
+          question: this.question,
+          type: this.type,
         },
-      };
-
+      }
       this.$axios(config)
         .then(function (response) {
           console.log(JSON.stringify(response.data));
@@ -228,59 +248,15 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
-    },
-    addLesson() {
-      var config = {
-        method: "post",
-        url: "/Lesson/Add",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: {
-          name: this.name,
-          ownerID: this.ownerID,
-        },
-      };
-
-      this.$axios(config)
-        .then(function (response) {
-          console.log(JSON.stringify(response.data));
-          this.Lessons.push(response.data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    deleteLesson() {
-      var config = {
-        method: "delete",
-        url: "/Lesson/Delete",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: {
-          iD: this.selected.id,
-        },
-      };
-      this.$axios(config)
-        .then(function (response) {
-          console.log(JSON.stringify(response.data));
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      this.deleteDialog = false;
-      var index = this.Lessons.findIndex(({ id }) => id === this.selected.id);
-      this.Lessons.splice(index, 1);
-    },
+    }
   },
-
   components: {
     ValidationProvider,
     ValidationObserver,
   },
-};
+}
 </script>
 
 <style>
+
 </style>
