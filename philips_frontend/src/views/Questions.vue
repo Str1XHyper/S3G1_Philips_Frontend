@@ -1,6 +1,6 @@
 <template>
   <div class="home">
- <v-container>
+    <v-container>
       <v-data-table
         :headers="headers"
         :items="Questions"
@@ -25,8 +25,6 @@
             >
           </v-toolbar>
         </template>
-        <template>
-</template>
         <template v-slot:item.questions="{ item }">
           <v-btn tile outlined> Questions </v-btn>
         </template>
@@ -40,11 +38,11 @@
     </v-container>
 
     <v-row justify="center">
-      <v-dialog v-model="deleteDialog" persistent max-width="600px">
+      <v-dialog v-model="deleteDialog" max-width="600px">
         <v-card>
           <v-card-title>
             <span class="headline">
-              Are you sure you want to delete "{{ selected.name }}"?</span
+              Are you sure you want to delete "{{ selected.question }}"?</span
             >
           </v-card-title>
           <v-card-actions>
@@ -88,16 +86,54 @@
 
                     <v-col cols="12" sm="6" md="6">
                       <v-combobox
-                      v-model="type"
-                      :items="types">
-
+                        @change="comboChange"
+                        v-model="type"
+                        :items="types"
+                      >
                       </v-combobox>
                     </v-col>
+                  </v-row>
+                  <v-row
+                    v-for="answer in answers"
+                    :key="answer.id"
+                    dense
+                    justify="space-around"
+                  >
+                    <v-col cols="12" lg="11">
+                      <ValidationProvider
+                        v-slot="{ errors }"
+                        name="Answer"
+                        rules="required"
+                      >
+                        <v-text-field
+                          v-model="answer.answer"
+                          label="Answer*"
+                          :error-messages="errors"
+                        ></v-text-field> </ValidationProvider
+                    ></v-col>
+                    <v-col lg="1">
+                      <v-checkbox
+                        v-bind:disabled="type === 'Open' || type === 'Algebra' || answers.indexOf(answer) == 0"
+                        color="info"
+                        v-model="answer.correct"
+                      ></v-checkbox
+                    ></v-col>
+                  </v-row>
+                  <v-row v-if="type != 'Open'">
+                    <v-col cols="12" lg="11">
+                      <v-text-field dense disabled label="Answer*">
+                      </v-text-field>
+                    </v-col>
+                    <v-col lg="1">
+                      <v-btn @click="addAnswer" small icon class="py-auto">
+                        <v-icon large color="success">mdi-plus</v-icon></v-btn
+                      ></v-col
+                    >
                   </v-row>
                 </v-container>
                 <small>*indicates required field</small>
               </v-card-text>
-              
+
               <v-card-actions>
                 <v-spacer></v-spacer>
 
@@ -131,7 +167,7 @@ extend("required", {
   message: "{_field_} can not be empty",
 });
 export default {
-data: () => ({
+  data: () => ({
     Questions: [],
     search: "",
     selected: {},
@@ -161,6 +197,13 @@ data: () => ({
     id: "",
     type: "",
     types: [],
+    answers: [
+      {
+        id: 1,
+        answer: "",
+        correct: true,
+      },
+    ],
   }),
   created() {
     this.$axios({
@@ -168,7 +211,6 @@ data: () => ({
       url: "/Question/" + this.$store.state.lessonID,
     })
       .then((result) => {
-          console.log(result.data)
         this.Questions = result.data;
       })
       .catch((error) => {
@@ -180,7 +222,6 @@ data: () => ({
       url: "/Question/Types",
     })
       .then((result) => {
-          console.log(result.data)
         this.types = result.data;
       })
       .catch((error) => {
@@ -189,6 +230,17 @@ data: () => ({
       });
   },
   methods: {
+    comboChange() {
+      switch (this.type) {
+        case "Open":
+          this.answers.splice(1, this.answers.length - 1);
+          break;
+        case "Algebra":
+          break;
+        case "MultipleChoice":
+          break;
+      }
+    },
     openDeleteDialog(question) {
       this.selected = question;
       this.deleteDialog = true;
@@ -199,13 +251,38 @@ data: () => ({
       this.id = question.id;
       this.isEdit = true;
       this.editDialog = true;
+      this.getAnswers(question.id);
+    },
+    getAnswers(questionID){
+      var config = {
+        method: "get",
+        url: "/Answer/" + questionID,
+        headers: {
+          "Content-Type": "application/json",
+        }
+      };
+
+      this.$axios(config)
+        .then((response) => {
+          this.answers = response.data;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     openAddDialog() {
       this.question = "";
       this.id = "";
-      this.type = "";
+      this.type = "Open";
       this.isEdit = false;
       this.editDialog = true;
+      this.answers = [
+        {
+          id: 1,
+          answer: "",
+          correct: true,
+        },
+      ];
     },
     closeEditDialog() {
       this.question = "";
@@ -214,6 +291,13 @@ data: () => ({
       this.$refs.observer.reset();
       this.isEdit = false;
       this.editDialog = false;
+    },
+    addAnswer() {
+      this.answers.push({
+        id: this.answers.length + 1,
+        answer: "",
+        correct: true,
+      });
     },
     submit() {
       this.$refs.observer.validate().then(() => {
@@ -225,8 +309,50 @@ data: () => ({
         } else {
           this.addQuestion();
         }
+        this.setAnswers(this.id);
         this.closeEditDialog();
       });
+    },
+    setAnswers(questionID) {
+      var config = {
+        method: "post",
+        url: "/Answer/Add",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          questionID: questionID,
+          answers: this.answers,
+        },
+      };
+      this.$axios(config)
+        .then((response) => {
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    addQuestion() {
+      var config = {
+        method: "post",
+        url: "/Question/Add",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          lessonId: this.$store.state.lessonID,
+          question: this.question,
+          type: this.type,
+        },
+      };
+
+      this.$axios(config)
+        .then((response) => {
+          this.Questions.push(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     updateQuestion() {
       var config = {
@@ -240,23 +366,41 @@ data: () => ({
           question: this.question,
           type: this.type,
         },
-      }
+      };
       this.$axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
         })
         .catch(function (error) {
           console.log(error);
         });
-    }
+    },
+    updateAnswers() {
+      var config = {
+        method: "put",
+        url: "/Question/Edit",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          id: this.id,
+          question: this.question,
+          type: this.type,
+        },
+      };
+      this.$axios(config)
+        .then(function (response) {
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
   },
   components: {
     ValidationProvider,
     ValidationObserver,
   },
-}
+};
 </script>
 
 <style>
-
 </style>

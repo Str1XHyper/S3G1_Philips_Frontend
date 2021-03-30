@@ -9,7 +9,6 @@ export default new Vuex.Store({
   },
   mutations: {
     setLessonId(state, lessonId){
-      console.log(state)
       state.lessonID = lessonId
     },
     clearLessonId(state){
