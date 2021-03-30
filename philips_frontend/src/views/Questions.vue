@@ -60,8 +60,7 @@
           <validation-observer ref="observer" v-slot="{ invalid }">
             <form @submit.prevent="submit">
               <v-card-title v-if="isEdit">
-                <span class="headline">Edit question with ID: </span>
-                <v-text-field class="ml-2" disabled :value="id"> </v-text-field>
+                <span class="headline">Edit question</span>
               </v-card-title>
               <v-card-title v-if="!isEdit">
                 <span class="headline">Add new question</span>
@@ -393,6 +392,29 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
+    },
+    deleteQuestion() {
+      var config = {
+        method: "delete",
+        url: "/Question/Delete",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          lessonID: this.$store.state.lessonID,
+          questionID: this.selected.id
+        },
+      };
+      this.$axios(config)
+        .then(function (response) {
+          console.log(JSON.stringify(response.data));
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      this.deleteDialog = false;
+      var index = this.Questions.findIndex(({ id }) => id === this.selected.id);
+      this.Questions.splice(index, 1);
     },
   },
   components: {

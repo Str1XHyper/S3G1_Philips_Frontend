@@ -5,6 +5,8 @@
         :headers="headers"
         :items="Lessons"
         :search="search"
+        v-bind:loading="loading"
+        loading-text="Loading lessons... Please wait"
         sort-by="name"
         class="elevation-1"
       >
@@ -35,6 +37,10 @@
           <v-icon small @click="openDeleteDialog(item)"> mdi-delete </v-icon>
         </template>
       </v-data-table>
+      
+      <v-alert v-if="error" class="mt-3" type="error" color="error">
+        An unknown error occured fetching the lessons!
+      </v-alert>
     </v-container>
 
     <v-row justify="center">
@@ -151,6 +157,8 @@ export default {
     name: "",
     id: "",
     ownerID: "",
+    loading: true,
+    error: false,
   }),
   created() {
     const config = {
@@ -160,9 +168,11 @@ export default {
     this.$axios(config)
       .then((result) => {
         this.Lessons = result.data;
+        this.loading = false;
       })
       .catch((error) => {
         this.error = true;
+        this.loading = false;
         console.log(error);
       });
   },

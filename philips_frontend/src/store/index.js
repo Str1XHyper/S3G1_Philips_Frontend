@@ -13,7 +13,7 @@ export default new Vuex.Store({
     },
     clearLessonId(state){
       state.lessonID = ""
-    }
+    },
   },
   actions: {
   },
