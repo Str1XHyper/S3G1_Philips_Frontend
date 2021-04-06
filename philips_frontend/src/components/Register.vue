@@ -94,7 +94,7 @@ export default {
   computed: {
     passwordMatch() {
       return () =>
-        this.password === this.confirmPassword || "Password must match";
+        this.password === this.passwordConfirm || "Password must match";
     },
   },
   components: {
@@ -111,19 +111,10 @@ export default {
 
   methods: {
     submit() {
-      this.$refs.observer.validate();
-
-      //Register Account
-      /*
-        If (possible) 
-        {
-          Redirect
-        }
-        else
-        {
-          Show error
-        }
-        */
+      this.$refs.observer.validate().then(() => {
+        this.register()
+        this.$router.push("/Dashboard")
+      });
     },
     clear() {
       this.username = "";
@@ -134,6 +125,30 @@ export default {
     toLogin() {
       this.$router.push("/Login");
     },
+    register() {
+      var config = {
+        method: "post",
+        url: "/Auth/Register",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          email: this.email,
+          password: this.password,
+          username: this.username,
+        },
+      };
+
+      this.$axios(config)
+        .then((response) => {
+          this.$store.commit("setLoggedIn");
+          this.$store.commit("setUser", response.data);
+        })
+        .catch(function (error) {
+          this.alert = true;
+        });
+    },
   },
+
 };
 </script>

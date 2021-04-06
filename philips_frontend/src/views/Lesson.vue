@@ -180,7 +180,6 @@ export default {
     openQuestions(lesson){
       this.$store.commit("setLessonId", lesson.id)
       this.$router.push("/Questions")
-      console.log(lesson)
     },
     openDeleteDialog(lesson) {
       this.selected = lesson;

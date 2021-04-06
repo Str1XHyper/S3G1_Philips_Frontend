@@ -87,18 +87,10 @@ export default {
 
   methods: {
     submit() {
-      this.$refs.observer.validate();
-      //Login Account
-      /*
-        If (possible) 
-        {
-          Redirect
-        }
-        else
-        {
-          Show error
-        }
-        */
+      this.$refs.observer.validate().then(() => {
+        this.login();
+        this.$router.push("/Dashboard")
+      })
     },
     clear() {
       this.username = "";
@@ -108,6 +100,35 @@ export default {
     toRegister() {
       this.$router.push("/Register");
     },
-  },
+    login() {
+      var config = {
+        method: "post",
+        url: "/Auth/Login",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: {
+          password: this.password,
+          username: this.username,
+        },
+      };
+
+      this.$axios(config)
+        .then((response) => {
+          console.log(response.data)
+          this.$cookie.set("TC.ISD", response.data.jwt, {
+            expires: 30,
+            domain: "localhost",
+            SameSite: "Lax",
+          });
+
+          this.$store.commit("setLoggedIn");
+          this.$store.commit("setUser", response.data.user);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+  }
 };
 </script>
