@@ -3,7 +3,7 @@
     <v-container fluid style="height: 100%">
       <v-row justify="space-around">
         <v-col lg="3">
-          <Sidebar v-bind:teams="Teams" v-bind:direction="Direction"/>
+          <Sidebar :teams="Teams" :direction="Direction"/>
         </v-col>
         <v-col cols="12" lg="9">
           <Question/>
