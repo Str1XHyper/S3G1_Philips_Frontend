@@ -117,6 +117,7 @@ import {
   ValidationProvider,
   setInteractionMode,
 } from "vee-validate";
+import store from '../store/index'
 
 setInteractionMode("eager");
 
@@ -150,20 +151,19 @@ export default {
         filterable: false,
         align: "right",
       },
-    ],
+    ],  
     editDialog: false,
     deleteDialog: false,
     isEdit: false,
     name: "",
     id: "",
-    ownerID: "",
     loading: true,
-    error: false,
+    error: false, 
   }),
   created() {
     const config = {
       method: "get",
-      url: "/Lesson",
+      url: "/Lesson/GetByOwner/"+ store.state.user.id ,
     };
     this.$axios(config)
       .then((result) => {
@@ -226,7 +226,7 @@ export default {
         data: {
           iD: this.id,
           name: this.name,
-          ownerID: this.ownerID,
+          ownerID: this.$store.state.user.id,
         },
       };
 
@@ -247,13 +247,12 @@ export default {
         },
         data: {
           name: this.name,
-          ownerID: this.ownerID,
+          ownerID: this.$store.state.user.id,
         },
       };
 
       this.$axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
           this.Lessons.push(response.data);
         })
         .catch(function (error) {
@@ -273,7 +272,6 @@ export default {
       };
       this.$axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
         })
         .catch(function (error) {
           console.log(error);

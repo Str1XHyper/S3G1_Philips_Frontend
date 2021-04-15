@@ -405,6 +405,7 @@ export default {
           questionID: this.selected.id
         },
       };
+      console.log(config.data)
       this.$axios(config)
         .then(function (response) {
           console.log(response.data);

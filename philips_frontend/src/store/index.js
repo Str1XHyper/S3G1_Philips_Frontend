@@ -8,6 +8,7 @@ export default new Vuex.Store({
     lessonID: "",
     loggedIn: false,
     user: {},
+    unityInstance: null,
   },
   mutations: {
     setLessonId(state, lessonId){
@@ -24,11 +25,13 @@ export default new Vuex.Store({
     },
     setUser(state, user) {
       state.user = user
-      console.log(state)
     },
     clearUser(state){
       state.user = {}
     },
+    setInstance(state, instance){
+      state.unityInstance = instance
+    }
   },
   actions: {
   },
