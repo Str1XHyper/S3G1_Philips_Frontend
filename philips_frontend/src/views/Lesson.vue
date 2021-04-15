@@ -5,6 +5,8 @@
         :headers="headers"
         :items="Lessons"
         :search="search"
+        v-bind:loading="loading"
+        loading-text="Loading lessons... Please wait"
         sort-by="name"
         class="elevation-1"
       >
@@ -26,7 +28,7 @@
           </v-toolbar>
         </template>
         <template v-slot:item.questions="{ item }">
-          <v-btn tile outlined> Questions </v-btn>
+          <v-btn @click="openQuestions(item)" tile outlined> Questions </v-btn>
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon small class="mr-2" @click="openEditDialog(item)">
@@ -35,6 +37,10 @@
           <v-icon small @click="openDeleteDialog(item)"> mdi-delete </v-icon>
         </template>
       </v-data-table>
+      
+      <v-alert v-if="error" class="mt-3" type="error" color="error">
+        An unknown error occured fetching the lessons!
+      </v-alert>
     </v-container>
 
     <v-row justify="center">
@@ -111,6 +117,7 @@ import {
   ValidationProvider,
   setInteractionMode,
 } from "vee-validate";
+import store from '../store/index'
 
 setInteractionMode("eager");
 
@@ -142,31 +149,38 @@ export default {
         value: "actions",
         sortable: false,
         filterable: false,
-        align: "center",
+        align: "right",
       },
-    ],
+    ],  
     editDialog: false,
     deleteDialog: false,
     isEdit: false,
     name: "",
     id: "",
-    ownerID: "",
+    loading: true,
+    error: false, 
   }),
   created() {
     const config = {
       method: "get",
-      url: "/Lesson",
+      url: "/Lesson/GetByOwner/"+ store.state.user.id ,
     };
     this.$axios(config)
       .then((result) => {
         this.Lessons = result.data;
+        this.loading = false;
       })
       .catch((error) => {
         this.error = true;
+        this.loading = false;
         console.log(error);
       });
   },
   methods: {
+    openQuestions(lesson){
+      this.$store.commit("setLessonId", lesson.id)
+      this.$router.push("/Questions")
+    },
     openDeleteDialog(lesson) {
       this.selected = lesson;
       this.deleteDialog = true;
@@ -212,7 +226,7 @@ export default {
         data: {
           iD: this.id,
           name: this.name,
-          ownerID: this.ownerID,
+          ownerID: this.$store.state.user.id,
         },
       };
 
@@ -233,13 +247,12 @@ export default {
         },
         data: {
           name: this.name,
-          ownerID: this.ownerID,
+          ownerID: this.$store.state.user.id,
         },
       };
 
       this.$axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
           this.Lessons.push(response.data);
         })
         .catch(function (error) {
@@ -259,7 +272,6 @@ export default {
       };
       this.$axios(config)
         .then(function (response) {
-          console.log(JSON.stringify(response.data));
         })
         .catch(function (error) {
           console.log(error);
