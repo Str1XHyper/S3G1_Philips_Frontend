@@ -4,11 +4,6 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const lessonPath = '/Lessons'
-const questionPath = '/Questions'
-const dashboardPath = '/Dashboard'
-const gamePath = '/Game'
-
 const Teacher = () => {return store.state.user.role === 'Teacher'}
 const Admin = () => {return store.state.user.role === 'Admin'}
 
@@ -19,7 +14,7 @@ const routes = [
     component: () => import('../views/Home.vue')
   },
   {
-    path: lessonPath,
+    path: '/Lessons',
     name: 'Lessons',
     component: () => import('../views/Lesson.vue'),
     beforeEnter:(to, from, next) => {
@@ -28,7 +23,7 @@ const routes = [
           next()
         }
         else{
-          next(dashboardPath)
+          next('/Dashboard')
         }
       } else
       {
@@ -37,12 +32,12 @@ const routes = [
     }
   },
   {
-    path: questionPath,
+    path: '/Questions',
     name: 'Questions',
     component: () => import('../views/Questions.vue'),
     beforeEnter:(to, from, next) => {
       if(store.state.lessonID == ""){
-        next(lessonPath)
+        next('/Lessons')
       } else
       {
         next()
@@ -50,7 +45,7 @@ const routes = [
     }
   },
   {
-    path: dashboardPath,
+    path: '/Dashboard',
     name: 'Dashboard',
     component: () => import('../views/Dashboard.vue'),
     beforeEnter:(to, from, next) => {
@@ -63,7 +58,7 @@ const routes = [
     }
   },
   {
-    path: gamePath,
+    path: '/Game',
     name: 'Game',
     component: () => import('../views/Game.vue'),
     // beforeEnter:(to, from, next) => {
