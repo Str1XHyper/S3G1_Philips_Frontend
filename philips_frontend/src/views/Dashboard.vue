@@ -7,7 +7,9 @@
           <Scheduler v-if="scheduler || admin"/>
           <Student v-if="student || admin"/>
       </v-row>
+      <v-row>
       <v-btn to="/Lessons"></v-btn>
+      </v-row>
   </v-container>
 </template>
 
