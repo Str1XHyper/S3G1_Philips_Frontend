@@ -1,6 +1,11 @@
 import Vue from 'vue'
 import store from '../store/index'
 import VueRouter from 'vue-router'
+import Home from '../views/Home.vue'
+import Lessons from '../views/Lesson.vue'
+import Questions from '../views/Questions.vue'
+import Dashboard from '../views/Dashboard.vue'
+import Game from '../views/Game.vue'
 
 Vue.use(VueRouter)
 
@@ -11,12 +16,12 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Home.vue')
+    component: Home
   },
   {
     path: '/Lessons',
     name: 'Lessons',
-    component: () => import('../views/Lesson.vue'),
+    component: Lessons,
     beforeEnter:(to, from, next) => {
       if(store.state.loggedIn){
         if((Teacher || Admin)){
@@ -34,7 +39,7 @@ const routes = [
   {
     path: '/Questions',
     name: 'Questions',
-    component: () => import('../views/Questions.vue'),
+    component: Questions,
     beforeEnter:(to, from, next) => {
       if(store.state.lessonID == ""){
         next('/Lessons')
@@ -47,7 +52,7 @@ const routes = [
   {
     path: '/Dashboard',
     name: 'Dashboard',
-    component: () => import('../views/Dashboard.vue'),
+    component: Dashboard,
     beforeEnter:(to, from, next) => {
       if(store.state.loggedIn){
         next()
@@ -60,7 +65,7 @@ const routes = [
   {
     path: '/Game',
     name: 'Game',
-    component: () => import('../views/Game.vue'),
+    component: Game,
     // beforeEnter:(to, from, next) => {
     //   if(store.state.loggedIn){
     //     next()
@@ -74,7 +79,6 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
-  base: process.env.BASE_URL,
   routes
 })
 
