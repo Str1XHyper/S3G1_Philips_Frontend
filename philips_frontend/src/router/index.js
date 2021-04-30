@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 
 const Teacher = () => {return store.state.user.role === 'Teacher'}
 const Admin = () => {return store.state.user.role === 'Admin'}
-const ClassManger = () => {return store.sta.user.role == "ClassManger"}
+const Scheduler = () => {return store.state.user.role == "Scheduler"}
 
 const routes = [
   {
@@ -72,9 +72,10 @@ const routes = [
     // }
   },
   {
-    path: '/ClassMaker',
-    name: 'ClassMaker',
-    component: () => import('../views/Classes/ClassMaker.vue'),
+    path: '/Classes',
+    name: 'Classes',
+    component: () => import('../views/Classes.vue')
+    /*
       beforeEnter:(to, from, next) => {
         if((ClassManger || Admin)) {
           next();
@@ -83,6 +84,7 @@ const routes = [
           next('/')
         }
       }
+     */
   }
 ]
 

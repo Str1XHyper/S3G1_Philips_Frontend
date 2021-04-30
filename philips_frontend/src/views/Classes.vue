@@ -1,8 +1,9 @@
 <template>
     <v-container>
         <v-row>
-            <h1>Class Maker Page</h1>
+            <h1 style="background-color: aqua; color: aqua">Class Maker Page</h1>
         </v-row>
+        <v-btn>Test button</v-btn>
     </v-container>
 </template>
 

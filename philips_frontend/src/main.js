@@ -6,7 +6,7 @@ import vuetify from './plugins/vuetify';
 import cookie from 'vue-cookie'
 import axios from 'axios'
 
-axios.defaults.baseURL = window.location.hostname === "localhost" ? "http://localhost:3000" : ""
+axios.defaults.baseURL = window.location.hostname === "localhost" ? "http://localhost:3000" : "http://api.str1xhyper.nl"
 
 Vue.use(cookie)
 Vue.config.productionTip = false
