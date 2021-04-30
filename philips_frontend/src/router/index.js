@@ -6,6 +6,7 @@ Vue.use(VueRouter)
 
 const Teacher = () => {return store.state.user.role === 'Teacher'}
 const Admin = () => {return store.state.user.role === 'Admin'}
+const ClassManger = () => {return store.sta.user.role == "ClassManger"}
 
 const routes = [
   {
@@ -70,6 +71,19 @@ const routes = [
     //   }
     // }
   },
+  {
+    path: '/ClassMaker',
+    name: 'ClassMaker',
+    component: () => import('../views/Classes/ClassMaker.vue'),
+      beforeEnter:(to, from, next) => {
+        if((ClassManger || Admin)) {
+          next();
+        }
+        else {
+          next('/')
+        }
+      }
+  }
 ]
 
 const router = new VueRouter({
