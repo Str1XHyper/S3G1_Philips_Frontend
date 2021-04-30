@@ -1,0 +1,60 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+      working-directory: ./philips_frontend
+    - run: npm run build --if-present
+      working-directory: ./philips_frontend
+    - run: npm test
+      working-directory: ./philips_frontend
+    - name: Archive production artifact
+      uses: actions/upload-artifact@main
+      with:
+        name: dist
+        path: philips_frontend/dist
+  
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Download artifact
+        uses: actions/download-artifact@main
+        with:
+          name: dist
+          path: philips_frontend/dist
+      - name: Deploy to tijnvanveghel.dev
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: 185.182.57.161
+          username: Philips@str1xhyper.nl
+          password: ${{secrets.ftp_password}}
+          server-dir: public_html/
+          local-dir: ./philips_frontend/dist/
