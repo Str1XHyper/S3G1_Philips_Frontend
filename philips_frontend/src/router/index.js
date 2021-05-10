@@ -74,17 +74,16 @@ const routes = [
   {
     path: '/Classes',
     name: 'Classes',
-    component: () => import('../views/Classes.vue')
-    /*
-      beforeEnter:(to, from, next) => {
-        if((Scheduler || Admin)) {
-          next();
-        }
-        else {
-          next('/')
-        }
+    component: () => import('../views/Classes.vue'),
+    beforeEnter:(to, from, next) => {
+      if(store.state.loggedIn){
+        next()
       }
-     */
+      else
+      {
+        next()
+      }
+    }
   }
 ]
 

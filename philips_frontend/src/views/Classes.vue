@@ -1,6 +1,7 @@
 <template>
     <v-data-table
-        :items="classes",
+        :headers="headers"
+        :items="classes"
         :items-per-page="10"
     >
         <template v-slot:top>
@@ -24,26 +25,36 @@
         created() {
             const config = {
                 method: "get",
-                url: "localhost:3000/Class"
+                url: "/Class"
             };
             this.$axios(config)
             .then((result) => {
                 this.classes = result.data;
                 this.loading = false;
             })
-            .catch()
         },
-        computed:{
-            admin() {
-                return this.$store.state.user.role == 'Admin'
-            },
-            scheduler() {
-                return this.$store.state.user.role == 'Scheduler'
-            }
-        }
+        data: () =>({
+            classes:[],
+            error:false,
+            loading:true,
+            headers: [
+                {
+                    text: "Name",
+                    align: "start",
+                    value: "name",
+                },
+                {
+                    text: "Actions",
+                    value: "actions",
+                    sortable: false,
+                    filterable: false,
+                    align: "right",
+                },
+            ],
+        })
     }
 </script>
 
-<style scoped>
+<style>
 
 </style>
