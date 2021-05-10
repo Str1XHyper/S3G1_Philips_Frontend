@@ -12,10 +12,12 @@
 
 
         <template v-slot:item.actions="{ item }">
+            <!--
             <v-icon small class="mr-2" @click="openEditDialog(item)">
                 mdi-pencil
             </v-icon>
             <v-icon small @click="openDeleteDialog(item)"> mdi-delete </v-icon>
+            -->
         </template>
     </v-data-table>
 </template>
@@ -39,10 +41,11 @@
             loading:true,
             headers: [
                 {
-                    text: "Name",
+                    text: "Class Name",
                     align: "start",
                     value: "name",
                 },
+                /*
                 {
                     text: "Actions",
                     value: "actions",
@@ -50,6 +53,7 @@
                     filterable: false,
                     align: "right",
                 },
+                 */
             ],
         })
     }
