@@ -77,7 +77,7 @@ const routes = [
     component: () => import('../views/Classes.vue')
     /*
       beforeEnter:(to, from, next) => {
-        if((ClassManger || Admin)) {
+        if((Scheduler || Admin)) {
           next();
         }
         else {
