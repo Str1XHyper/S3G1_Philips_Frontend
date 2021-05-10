@@ -77,11 +77,16 @@ const routes = [
     component: () => import('../views/Classes.vue'),
     beforeEnter:(to, from, next) => {
       if(store.state.loggedIn){
-        next()
+        if((Scheduler || Teacher)) {
+          next()
+        }
+        else {
+          next('/')
+        }
       }
       else
       {
-        next()
+        next('/')
       }
     }
   }
