@@ -12,7 +12,7 @@
           </v-toolbar>
         </template>
         
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:item.actions="{ item }" v-if="HasEditPermission">
           <v-icon small class="mr-2" @click="openEditDialog(item)">
             mdi-pencil
           </v-icon>
@@ -23,6 +23,9 @@
 <script>
 import store from '../../store/index'
 export default {
+  props:{
+    HasEditPermission: Boolean,
+  },
     created() {
     const config = {
       method: "get",
