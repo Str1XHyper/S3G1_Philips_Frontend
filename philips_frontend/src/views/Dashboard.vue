@@ -23,16 +23,16 @@ export default {
     },
     computed:{
         student() {
-            return this.$store.state.user.role == 'Student'
+            return this.$store.state.user.role == 'STUDENT'
         },
         admin() {
-            return this.$store.state.user.role == 'Admin'
+            return this.$store.state.user.role == 'ADMIN'
         },
         scheduler() {
-            return this.$store.state.user.role == 'Scheduler'
+            return this.$store.state.user.role == 'SCHEDULER'
         },
         teacher() {
-            return this.$store.state.user.role == 'Teacher'
+            return this.$store.state.user.role == 'TEACHER'
         },
     }
 };
