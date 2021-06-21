@@ -7,6 +7,7 @@ import cookie from 'vue-cookie'
 import axios from 'axios'
 
 axios.defaults.baseURL = "https://api.str1xhyper.nl"
+// axios.defaults.baseURL = "http://localhost:3000"
 
 Vue.use(cookie)
 Vue.config.productionTip = false
