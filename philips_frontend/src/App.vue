@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <v-app-bar-nav-icon class="mx-2" href="/">
+      <v-app-bar-nav-icon class="mx-2" to="/Dashboard">
         <v-img
           alt="Vuetify Logo"
           class="shrink"
@@ -11,8 +11,8 @@
           max-width="40"
         />
       </v-app-bar-nav-icon>
-      <v-app-bar-title> Mercier </v-app-bar-title>
-
+      <v-btn text to="/Dashboard">Mercier</v-btn>
+    
       <v-spacer></v-spacer>
 
         <v-row v-if="$store.state.loggedIn" justify="end">
