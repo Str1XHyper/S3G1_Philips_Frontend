@@ -112,13 +112,13 @@
                     ></v-col>
                     <v-col lg="1">
                       <v-checkbox
-                        v-bind:disabled="type === 'Open' || type === 'Algebra' || answers.indexOf(answer) == 0"
+                        v-bind:disabled="type === 'OPEN' || type === 'ALGEBRA' || answers.indexOf(answer) == 0"
                         color="info"
                         v-model="answer.correct"
                       ></v-checkbox
                     ></v-col>
                   </v-row>
-                  <v-row v-if="type != 'Open'">
+                  <v-row v-if="type != 'OPEN'">
                     <v-col cols="12" lg="11">
                       <v-text-field dense disabled label="Answer*">
                       </v-text-field>
@@ -214,7 +214,6 @@ export default {
       })
       .catch((error) => {
         this.error = true;
-        console.log(error);
       });
     this.$axios({
       method: "get",
@@ -225,18 +224,17 @@ export default {
       })
       .catch((error) => {
         this.error = true;
-        console.log(error);
       });
   },
   methods: {
     comboChange() {
       switch (this.type) {
-        case "Open":
+        case "OPEN":
           this.answers.splice(1, this.answers.length - 1);
           break;
-        case "Algebra":
+        case "ALGEBRA":
           break;
-        case "MultipleChoice":
+        case "MULTIPLECHOICE":
           break;
       }
     },
@@ -266,13 +264,12 @@ export default {
           this.answers = response.data;
         })
         .catch(function (error) {
-          console.log(error);
         });
     },
     openAddDialog() {
       this.question = "";
       this.id = "";
-      this.type = "Open";
+      this.type = "OPEN";
       this.isEdit = false;
       this.editDialog = true;
       this.answers = [
@@ -308,7 +305,6 @@ export default {
         } else {
           this.addQuestion();
         }
-        this.setAnswers(this.id);
         this.closeEditDialog();
       });
     },
@@ -328,7 +324,6 @@ export default {
         .then((response) => {
         })
         .catch(function (error) {
-          console.log(error);
         });
     },
     addQuestion() {
@@ -347,10 +342,10 @@ export default {
 
       this.$axios(config)
         .then((response) => {
+          this.setAnswers(response.data.id);
           this.Questions.push(response.data);
         })
         .catch(function (error) {
-          console.log(error);
         });
     },
     updateQuestion() {
@@ -370,7 +365,6 @@ export default {
         .then(function (response) {
         })
         .catch(function (error) {
-          console.log(error);
         });
     },
     updateAnswers() {
@@ -390,7 +384,6 @@ export default {
         .then(function (response) {
         })
         .catch(function (error) {
-          console.log(error);
         });
     },
     deleteQuestion() {
@@ -405,13 +398,10 @@ export default {
           questionID: this.selected.id
         },
       };
-      console.log(config.data)
       this.$axios(config)
         .then(function (response) {
-          console.log(response.data);
         })
         .catch(function (error) {
-          console.log(error);
         });
       this.deleteDialog = false;
       var index = this.Questions.findIndex(({ id }) => id === this.selected.id);

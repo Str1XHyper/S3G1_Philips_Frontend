@@ -1,28 +1,26 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
+      <v-app-bar-nav-icon class="mx-2" to="/Dashboard">
         <v-img
           alt="Vuetify Logo"
-          class="shrink mr-2"
+          class="shrink"
           contain
           src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
           transition="scale-transition"
-          width="40"
+          max-width="40"
         />
-      </div>
-      <v-toolbar-title> Mercier </v-toolbar-title>
-
+      </v-app-bar-nav-icon>
+      <v-btn text to="/Dashboard">Mercier</v-btn>
+    
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+        <v-row v-if="$store.state.loggedIn" justify="end">
+          <v-btn tile text to="/Dashboard">Dashboard</v-btn>
+          <div v-if="$store.state.user.role == 'TEACHER'">
+            <v-btn tile text to="/Lessons">Lessons</v-btn>
+          </div>
+        </v-row>
     </v-app-bar>
 
     <v-main>

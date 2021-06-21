@@ -252,7 +252,7 @@ export default {
       };
 
       this.$axios(config)
-        .then(function (response) {
+        .then((response) => {
           this.Lessons.push(response.data);
         })
         .catch(function (error) {
